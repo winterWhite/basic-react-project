@@ -1,5 +1,6 @@
 const webpack = require("webpack")
 const HtmlWebPackPlugin = require("html-webpack-plugin");
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 
 const htmlWebpackPlugin = new HtmlWebPackPlugin({
   template: "./src/index.html",
@@ -8,16 +9,31 @@ const htmlWebpackPlugin = new HtmlWebPackPlugin({
 
 module.exports = {
   resolve: {
-    extensions: ['.js', '.jsx']
+    extensions: ['.js', '.jsx', '.ts', '.tsx']
   },
   module: {
     rules: [
       {
-        test: /\.(js|jsx)?$/,
+        enforce: 'pre',
+        test: /\.js$/,
+        loader: "source-map-loader"
+      },
+      {
+        enforce: 'pre',
+        test: /\.tsx?$/,
+        use: "source-map-loader"
+      },
+      {
+        test: /\.(ts|tsx)?$/,
         exclude: /node_modules/,
-        use: {
-          loader: "babel-loader"
-        }
+        use: [
+          {
+            loader: "babel-loader"
+          },
+          {
+            loader: "ts-loader"
+          }
+        ]
       },
       {
         test: /\.(css|scss)?$/,
@@ -47,7 +63,8 @@ module.exports = {
     ]
   },
   plugins: [
+    new ForkTsCheckerWebpackPlugin(),
     htmlWebpackPlugin,
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
   ]
 };
