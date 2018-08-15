@@ -1,3 +1,4 @@
+const webpack = require("webpack")
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 
 const htmlWebpackPlugin = new HtmlWebPackPlugin({
@@ -6,17 +7,20 @@ const htmlWebpackPlugin = new HtmlWebPackPlugin({
 });
 
 module.exports = {
+  resolve: {
+    extensions: ['.js', '.jsx']
+  },
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.(js|jsx)?$/,
         exclude: /node_modules/,
         use: {
           loader: "babel-loader"
         }
       },
       {
-        test: /\.css$/,
+        test: /\.(css|scss)?$/,
         use: [
           {
             loader: "style-loader"
@@ -30,10 +34,20 @@ module.exports = {
               sourceMap: true,
               minimize: true
             }
+          },
+          {
+            loader: "sass-loader"
           }
         ]
+      },
+      {
+        test: /\.(jpe?g|png|gif|ogg|mp3)?$/,
+        use: ["url-loader"]
       }
     ]
   },
-  plugins: [htmlWebpackPlugin]
+  plugins: [
+    htmlWebpackPlugin,
+    new webpack.HotModuleReplacementPlugin()
+  ]
 };
